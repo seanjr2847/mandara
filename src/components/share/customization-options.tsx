@@ -68,7 +68,7 @@ export function CustomizationOptions({
                         ? "bg-primary text-primary-foreground"
                         : "bg-muted hover:bg-muted/80"
                     }`}
-                    style={{ fontFamily: fontOption.value }}
+                    style={{ fontFamily: fontOption.className }}
                   >
                     {fontOption.label}
                   </button>
