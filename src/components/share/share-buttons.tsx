@@ -1,18 +1,9 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { toPng } from "html-to-image";
-import {
-  FacebookShareButton,
-  TwitterShareButton,
-  FacebookIcon,
-  TwitterIcon,
-} from "react-share";
-import Image from "next/image";
-import LinkIcon from "@/components/icons/link-icon";
 import { initializeKakao } from "@/lib/kakao";
 import { toast } from "sonner";
 import { useEffect } from "react";
+import Image from "next/image";
 
 interface ShareButtonsProps {
   shareUrl: string;
@@ -51,41 +42,37 @@ export const ShareButtons = ({ shareUrl }: ShareButtonsProps) => {
     }
   };
 
-  const handleInstagramShare = () => {
-    // Instagram은 직접적인 공유 API를 제공하지 않아서 
-    // 이미지를 다운로드하고 Instagram 앱을 여는 방식으로 구현
-    window.open('instagram://camera');
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success("링크가 복사되었습니다.");
+    } catch {
+      toast.error("링크 복사에 실패했습니다.");
+    }
   };
 
   return (
-    <div className="flex gap-4 items-center justify-center mt-4">
+    <div className="flex flex-col gap-4">
       <button
         onClick={handleKakaoShare}
-        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#FFE812] hover:bg-[#FFE000] transition-colors"
+        className="flex items-center justify-center gap-2 bg-yellow-400 text-black px-4 py-2 rounded-lg hover:bg-yellow-500 transition-colors"
       >
-        <Image src="/kakao.svg" alt="KakaoTalk" width={24} height={24} />
-        <span className="text-[#381F1F]">카카오톡 공유</span>
+        <Image
+          src="/kakao.svg"
+          alt="카카오톡으로 공유하기"
+          width={20}
+          height={20}
+        />
+        카카오톡으로 공유하기
       </button>
-      
       <button
-        onClick={handleInstagramShare}
-        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[#E09B3D] to-[#C21975] hover:opacity-90 transition-opacity text-white"
-      >
-        <Image src="/instagram.svg" alt="Instagram" width={24} height={24} />
-        <span>Instagram 공유</span>
-      </button>
-
-      <button
-        onClick={() => {
-          navigator.clipboard.writeText(shareUrl);
-          toast.success("링크가 복사되었습니다!");
-        }}
-        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+        onClick={handleCopyLink}
+        className="flex items-center justify-center gap-2 bg-slate-700 text-white px-4 py-2 rounded-lg hover:bg-slate-600 transition-colors"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
+          width="20"
+          height="20"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -96,7 +83,7 @@ export const ShareButtons = ({ shareUrl }: ShareButtonsProps) => {
           <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
           <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
         </svg>
-        <span className="text-black">링크 복사</span>
+        링크 복사하기
       </button>
     </div>
   );

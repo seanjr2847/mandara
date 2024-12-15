@@ -14,7 +14,7 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import Image from "next/image";
 import { initializeKakao } from "@/lib/kakao";
-import { Theme, Font } from "@/lib/share-customization";
+import { Theme, Font, themes, fonts } from "@/lib/share-customization";
 
 interface ShareDialogProps {
   mandalId?: string;
@@ -38,8 +38,8 @@ export function ShareDialog({
   useEffect(() => {
     if (!shareUrl && mandalId) {
       const url = new URL(`${window.location.origin}/share/${mandalId}`);
-      url.searchParams.set("theme", theme.name);
-      url.searchParams.set("font", font.name);
+      url.searchParams.set("theme", Object.entries(themes).find(([, t]) => t === theme)?.[0] || "default");
+      url.searchParams.set("font", Object.entries(fonts).find(([, f]) => f === font)?.[0] || "default");
       url.searchParams.set("author", showAuthor ? "1" : "0");
       url.searchParams.set("date", showDate ? "1" : "0");
       setShareUrl(url.toString());
