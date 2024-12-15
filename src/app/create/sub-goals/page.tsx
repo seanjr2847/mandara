@@ -57,7 +57,7 @@ export default function SubGoalsPage() {
         <div className="text-center space-y-4">
           <h1 className="text-3xl font-bold">세부 목표 설정</h1>
           <p className="text-slate-400">
-            &ldquo;{mainGoal}&rdquo;를 이루기 위한 8가지 세부 목표를 입력해주세요.
+            &quot;{mainGoal}&quot;를 이루기 위한 8가지 세부 목표를 입력해주세요.
           </p>
         </div>
 
@@ -81,7 +81,7 @@ export default function SubGoalsPage() {
               <Input
                 value={goal}
                 onChange={(e) => setSubGoal(index, e.target.value)}
-                placeholder={`&ldquo;세부 목표&rdquo;를 입력해주세요`}
+                placeholder={`&quot;세부 목표&quot;를 입력해주세요`}
                 className="text-lg py-6"
               />
             </div>

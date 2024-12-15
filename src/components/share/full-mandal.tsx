@@ -13,10 +13,9 @@ interface SubMandalProps {
   subGoal: string;
   details: string[];
   theme: Theme;
-  isCenter?: boolean;
 }
 
-function SubMandal({ subGoal, details, theme, isCenter = false }: SubMandalProps) {
+function SubMandal({ subGoal, details, theme }: SubMandalProps) {
   // 3x3 그리드의 각 셀 위치에 대한 인덱스 매핑
   const cellOrder = [0, 1, 2, 7, -1, 3, 6, 5, 4];
 
@@ -61,7 +60,6 @@ export function FullMandal({
             subGoal={data.subGoals[index] || ""}
             details={data.subGoalDetails[index]?.tasks || Array(8).fill("")}
             theme={theme}
-            isCenter={index === 4}
           />
         ))}
       </div>

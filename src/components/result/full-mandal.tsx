@@ -22,9 +22,10 @@ export function FullMandal({
   const renderCell = (text: string, isCenter: boolean = false, isMainCell: boolean = false) => (
     <div
       className={cn(
-        "relative w-[100px] h-[100px] border border-red-500",
+        "relative w-[100px] h-[100px] border",
+        theme.border,
         {
-          "bg-red-500": isCenter || isMainCell,
+          [theme.background]: isCenter || isMainCell,
           "bg-slate-900": !isCenter && !isMainCell,
         }
       )}
