@@ -1,15 +1,8 @@
 "use client";
 
-import { Theme, Font, themes, fonts } from "@/lib/share-customization";
+import { themes, fonts } from "@/lib/share-customization";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface CustomizationOptionsProps {

@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     const mandalData: Mandal = {
       mainGoal: data.mainGoal.trim(),
       subGoals: data.subGoals.map((goal: string) => goal.trim()),
-      subGoalDetails: data.subGoalDetails.map((detail: any) => ({
+      subGoalDetails: data.subGoalDetails.map((detail: { title?: string; tasks: string[] }) => ({
         title: detail.title?.trim() || "",
         tasks: detail.tasks.map((task: string) => task.trim())
       })),
