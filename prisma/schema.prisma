@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Mandal {
+  id             String   @id @default(cuid())
+  mainGoal       String
+  subGoals       String   // JSON string of string[]
+  subGoalDetails String   // JSON string of object
+  author         String?
+  createdAt      DateTime @default(now())
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  goals     Goal[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Goal {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  subGoals    SubGoal[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model SubGoal {
+  id          String   @id @default(cuid())
+  title       String
+  tasks       String   // JSON string of string[]
+  goalId      String
+  goal        Goal     @relation(fields: [goalId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
