@@ -1,13 +1,21 @@
+import { KakaoStatic } from './kakao-types';
+
 declare global {
   interface Window {
-    Kakao: any;
+    Kakao: KakaoStatic;
   }
 }
 
 export function initializeKakao() {
+  const apiKey = process.env.NEXT_PUBLIC_KAKAO_API_KEY;
+  if (!apiKey) {
+    console.error('카카오 API 키가 설정되지 않았습니다.');
+    return;
+  }
+  
   if (typeof window !== 'undefined' && window.Kakao) {
     if (!window.Kakao.isInitialized()) {
-      window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_API_KEY);
+      window.Kakao.init(apiKey);
     }
   }
 }
@@ -20,7 +28,7 @@ interface ShareKakaoParams {
 }
 
 export function shareKakao({ title, description, imageUrl, link }: ShareKakaoParams) {
-  if (typeof window !== 'undefined' && window.Kakao) {
+  if (window.Kakao) {
     window.Kakao.Share.sendDefault({
       objectType: 'feed',
       content: {
