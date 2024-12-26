@@ -28,8 +28,6 @@ ${isSubGoal ? "세부 목표" : "중심 목표"}를 바탕으로 8개의 ${isSub
 
 추가 설명이나 다른 텍스트는 포함하지 마세요.`;
 
-  const userMessage = `다음 ${isSubGoal ? "세부" : "중심"} 목표에 대한 ${isSubGoal ? "하위" : "세부"} 목표 8개를 추천해주세요: "${mainGoal}"`;
-
   try {
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -45,7 +43,7 @@ ${isSubGoal ? "세부 목표" : "중심 목표"}를 바탕으로 8개의 ${isSub
         messages: [
           {
             role: "user",
-            content: userMessage,
+            content: `다음 ${isSubGoal ? "세부" : "중심"} 목표에 대한 ${isSubGoal ? "하위" : "세부"} 목표 8개를 추천해주세요: "${mainGoal}"`,
           },
         ],
       }),
@@ -57,14 +55,21 @@ ${isSubGoal ? "세부 목표" : "중심 목표"}를 바탕으로 8개의 ${isSub
     }
 
     const data = await response.json();
+    console.log("Claude API Response:", JSON.stringify(data, null, 2));
+
     if (!data.content?.[0]?.text) {
       throw new Error(`Invalid API response format: ${JSON.stringify(data)}`);
     }
 
-    const recommendations = data.content[0].text
+    const text = data.content[0].text;
+    console.log("Extracted text:", text);
+
+    const recommendations = text
       .split("\n")
       .filter((line: string) => line.match(/^\d\./))
       .map((line: string) => line.replace(/^\d\.\s*/, "").trim());
+
+    console.log("Parsed recommendations:", recommendations);
 
     if (recommendations.length === 0) {
       throw new Error("No recommendations found in response");

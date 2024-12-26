@@ -1,109 +1,111 @@
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
-import { validateMandal } from "@/types/mandal";
-import type { Mandal } from "@/types/mandal";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
-export async function POST(request: Request) {
+interface SharedMandalResponse {
+  id: string;
+  mainGoal: string;
+  authorName: string;
+  viewCount: number;
+  likeCount: number;
+  theme: string;
+  createdAt: string;
+}
+
+export async function POST(req: NextRequest) {
   try {
-    const data = await request.json();
-    const validation = validateMandal(data);
-    
-    if (!validation.isValid) {
+    const session = await getServerSession(authOptions);
+    const { mainGoal, subGoals, subGoalDetails } = await req.json();
+
+    if (!mainGoal || !subGoals || !subGoalDetails) {
       return NextResponse.json(
-        { error: validation.error },
+        { success: false, error: "필수 데이터가 누락되었습니다." },
         { status: 400 }
       );
     }
 
-    // 데이터 정제
-    const mandalData: Mandal = {
-      mainGoal: data.mainGoal.trim(),
-      subGoals: data.subGoals.map((goal: string) => goal.trim()),
-      subGoalDetails: data.subGoalDetails.map((detail: { title?: string; tasks: string[] }) => ({
-        title: detail.title?.trim() || "",
-        tasks: detail.tasks.map((task: string) => task.trim())
-      })),
-      author: data.author?.trim(),
-      createdAt: new Date()
-    };
-
     const mandal = await prisma.mandal.create({
       data: {
-        mainGoal: mandalData.mainGoal,
-        subGoals: JSON.stringify(mandalData.subGoals),
-        subGoalDetails: JSON.stringify(mandalData.subGoalDetails),
-        author: mandalData.author || null,
-        createdAt: mandalData.createdAt,
+        mainGoal,
+        subGoals: JSON.stringify(subGoals),
+        subGoalDetails: JSON.stringify(subGoalDetails),
+        author: session?.user?.name || "익명",
       },
     });
 
-    return NextResponse.json({ id: mandal.id });
+    const sharedMandal = await prisma.sharedMandal.create({
+      data: {
+        mandalId: mandal.id,
+        authorName: session?.user?.name || "익명",
+        theme: "light",
+        font: "default",
+        userId: session?.user?.id || null,
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      id: sharedMandal.id,
+    });
   } catch (error) {
-    console.error("만다라트 저장 실패:", error);
+    console.error("Error sharing mandal:", error);
     return NextResponse.json(
-      { error: "만다라트 저장에 실패했습니다." },
+      { success: false, error: "Failed to share mandal" },
       { status: 500 }
     );
   }
 }
 
-export async function GET(request: Request) {
+export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get("id");
+    const { searchParams } = new URL(req.url);
+    const cursor = searchParams.get("cursor");
+    const limit = 12;
 
-    if (!id) {
-      return NextResponse.json(
-        { error: "ID가 필요합니다." },
-        { status: 400 }
-      );
-    }
-
-    const mandal = await prisma.mandal.findUnique({
-      where: { id },
+    const items = await prisma.sharedMandal.findMany({
+      take: limit,
+      ...(cursor
+        ? {
+            skip: 1,
+            cursor: {
+              id: cursor,
+            },
+          }
+        : {}),
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        mandal: true,
+        _count: {
+          select: {
+            likes: true,
+          },
+        },
+      },
     });
 
-    if (!mandal) {
-      return NextResponse.json(
-        { error: "만다라트를 찾을 수 없습니다." },
-        { status: 404 }
-      );
-    }
+    const nextCursor = items.length === limit ? items[items.length - 1].id : null;
 
-    try {
-      // JSON 파싱 오류 처리
-      const subGoals = JSON.parse(mandal.subGoals);
-      const subGoalDetails = JSON.parse(mandal.subGoalDetails);
+    const formattedItems = items.map((item) => ({
+      id: item.id,
+      mainGoal: item.mandal.mainGoal,
+      authorName: item.authorName,
+      viewCount: item.viewCount,
+      likeCount: item._count.likes,
+      theme: item.theme,
+      createdAt: item.createdAt.toISOString(),
+    }));
 
-      const validation = validateMandal({
-        mainGoal: mandal.mainGoal,
-        subGoals,
-        subGoalDetails
-      });
-
-      if (!validation.isValid) {
-        return NextResponse.json(
-          { error: "저장된 만다라트 데이터가 유효하지 않습니다." },
-          { status: 500 }
-        );
-      }
-
-      return NextResponse.json({
-        ...mandal,
-        subGoals,
-        subGoalDetails,
-      });
-    } catch (parseError) {
-      console.error("만다라트 데이터 파싱 실패:", parseError);
-      return NextResponse.json(
-        { error: "저장된 만다라트 데이터가 손상되었습니다." },
-        { status: 500 }
-      );
-    }
+    return NextResponse.json({
+      items: formattedItems,
+      nextCursor,
+    });
   } catch (error) {
-    console.error("만다라트 조회 실패:", error);
+    console.error("Error fetching shared mandals:", error);
     return NextResponse.json(
-      { error: "만다라트 조회에 실패했습니다." },
+      { success: false, error: "Failed to fetch shared mandals" },
       { status: 500 }
     );
   }

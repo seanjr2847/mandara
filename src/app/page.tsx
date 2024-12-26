@@ -81,13 +81,6 @@ export default function Home() {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="max-w-2xl mx-auto text-center"
           >
-            <div className="bg-slate-900/50 p-8 rounded-2xl border border-slate-800 backdrop-blur-sm">
-              <p className="text-lg text-slate-400 leading-relaxed">
-                만다라트는 하나의 목표를 8개의 세부 목표로 나누어
-                <br className="hidden sm:block" />
-                체계적으로 달성하는 목표 설정 방법입니다
-              </p>
-            </div>
           </motion.div>
         </div>
       </div>

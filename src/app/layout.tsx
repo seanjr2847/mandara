@@ -4,6 +4,8 @@ import Script from "next/script";
 import "./globals.css";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { Toaster } from "@/components/ui/toaster";
+import Providers from "./providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ko">
+    <html lang="ko" className="dark" suppressHydrationWarning>
       <head>
         <Script
           src="https://t1.kakaocdn.net/kakao_js_sdk/2.6.0/kakao.min.js"
@@ -27,12 +29,15 @@ export default function RootLayout({
           strategy="lazyOnload"
         />
       </head>
-      <body className={`${inter.className} bg-slate-950 text-white min-h-screen flex flex-col`}>
-        <Header />
-        <div className="flex-1">
-          {children}
-        </div>
-        <Footer />
+      <body className={`${inter.className} min-h-screen flex flex-col bg-background text-foreground`}>
+        <Providers>
+          <Header />
+          <div className="flex-1">
+            {children}
+          </div>
+          <Footer />
+          <Toaster />
+        </Providers>
       </body>
     </html>
   );

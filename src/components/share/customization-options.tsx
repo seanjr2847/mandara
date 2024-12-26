@@ -3,7 +3,6 @@
 import { themes, fonts } from "@/lib/share-customization";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent } from "@/components/ui/card";
 
 interface CustomizationOptionsProps {
   theme: string;
@@ -27,12 +26,12 @@ export function CustomizationOptions({
   onShowDateChange,
 }: CustomizationOptionsProps) {
   return (
-    <Card className="w-full bg-background border-none">
-      <CardContent className="p-6 space-y-6">
+    <div className="w-full bg-slate-800 rounded-lg border border-slate-700">
+      <div className="p-6 space-y-6">
         <div className="grid gap-6 sm:grid-cols-2">
           <div className="space-y-4">
             <div>
-              <Label className="text-base">테마 선택</Label>
+              <Label className="text-base text-slate-100">테마 선택</Label>
               <div className="grid grid-cols-2 gap-2 mt-2">
                 {Object.entries(themes).map(([key, themeOption]) => (
                   <button
@@ -40,8 +39,8 @@ export function CustomizationOptions({
                     onClick={() => onThemeChange(key)}
                     className={`px-4 py-2 rounded-lg transition-colors ${
                       theme === key
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted hover:bg-muted/80"
+                        ? "bg-red-500 text-white"
+                        : "bg-slate-900 text-slate-200 hover:bg-slate-700"
                     }`}
                   >
                     {themeOption.label}
@@ -50,7 +49,7 @@ export function CustomizationOptions({
               </div>
             </div>
             <div>
-              <Label className="text-base">글꼴 선택</Label>
+              <Label className="text-base text-slate-100">글꼴 선택</Label>
               <div className="grid grid-cols-2 gap-2 mt-2">
                 {Object.entries(fonts).map(([key, fontOption]) => (
                   <button
@@ -58,8 +57,8 @@ export function CustomizationOptions({
                     onClick={() => onFontChange(key)}
                     className={`px-4 py-2 rounded-lg transition-colors ${
                       font === key
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted hover:bg-muted/80"
+                        ? "bg-red-500 text-white"
+                        : "bg-slate-900 text-slate-200 hover:bg-slate-700"
                     }`}
                     style={{ fontFamily: fontOption.className }}
                   >
@@ -71,10 +70,10 @@ export function CustomizationOptions({
           </div>
           <div className="space-y-4">
             <div>
-              <Label className="text-base">표시 옵션</Label>
+              <Label className="text-base text-slate-100">표시 옵션</Label>
               <div className="space-y-3 mt-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="show-author" className="cursor-pointer">
+                  <Label htmlFor="show-author" className="cursor-pointer text-slate-200">
                     작성자 표시
                   </Label>
                   <Switch
@@ -84,7 +83,7 @@ export function CustomizationOptions({
                   />
                 </div>
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="show-date" className="cursor-pointer">
+                  <Label htmlFor="show-date" className="cursor-pointer text-slate-200">
                     작성일 표시
                   </Label>
                   <Switch
@@ -97,7 +96,7 @@ export function CustomizationOptions({
             </div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

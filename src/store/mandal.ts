@@ -12,6 +12,8 @@ interface MandalState {
   subGoalDetails: SubGoalDetail[];
   currentSubGoalIndex: number;
   setMainGoal: (goal: string) => void;
+  setSubGoals: (goals: string[]) => void;
+  setSubGoalDetails: (details: SubGoalDetail[]) => void;
   setSubGoal: (index: number, goal: string) => void;
   setSubGoalDetail: (index: number, detail: SubGoalDetail) => void;
   setSubGoalTasks: (index: number, tasks: string[]) => void;
@@ -31,6 +33,8 @@ export const useMandalStore = create<MandalState>()(
       })),
       currentSubGoalIndex: 0,
       setMainGoal: (goal) => set({ mainGoal: goal }),
+      setSubGoals: (goals) => set({ subGoals: goals }),
+      setSubGoalDetails: (details) => set({ subGoalDetails: details }),
       setSubGoal: (index, goal) =>
         set((state) => {
           if (index < 0 || index >= 8) return state;
@@ -51,22 +55,23 @@ export const useMandalStore = create<MandalState>()(
           const newSubGoalDetails = [...state.subGoalDetails];
           newSubGoalDetails[index] = {
             ...newSubGoalDetails[index],
-            tasks: tasks.slice(0, 8),
+            tasks,
           };
           return { subGoalDetails: newSubGoalDetails };
         }),
-      setCurrentSubGoalIndex: (index) => 
+      setCurrentSubGoalIndex: (index) =>
         set((state) => {
           if (index < 0 || index >= 8) return state;
           return { currentSubGoalIndex: index };
         }),
       getCurrentSubGoal: () => {
         const state = get();
-        const index = state.currentSubGoalIndex;
-        return state.subGoalDetails[index] || {
-          title: "",
-          tasks: Array(8).fill("")
-        };
+        return (
+          state.subGoalDetails[state.currentSubGoalIndex] || {
+            title: "",
+            tasks: Array(8).fill(""),
+          }
+        );
       },
       reset: () =>
         set({
@@ -74,7 +79,7 @@ export const useMandalStore = create<MandalState>()(
           subGoals: Array(8).fill(""),
           subGoalDetails: Array.from({ length: 8 }, () => ({
             title: "",
-            tasks: Array(8).fill("")
+            tasks: Array(8).fill(""),
           })),
           currentSubGoalIndex: 0,
         }),

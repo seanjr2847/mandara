@@ -7,6 +7,47 @@ datasource db {
   url      = "file:./dev.db"
 }
 
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  Mandal        Mandal[]
+  SharedMandal  SharedMandal[]
+  Like          Like[]
+  Report        Report[]
+}
+
 model Mandal {
   id             String   @id @default(cuid())
   mainGoal       String
@@ -14,34 +55,44 @@ model Mandal {
   subGoalDetails String   // JSON string of object
   author         String?
   createdAt      DateTime @default(now())
+  SharedMandal   SharedMandal[]
 }
 
-model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  goals     Goal[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model SharedMandal {
+  id          String    @id @default(cuid())
+  mandalId    String    @unique
+  mandal      Mandal    @relation(fields: [mandalId], references: [id])
+  authorName  String
+  authorEmail String?
+  authorImage String?
+  userId      String?
+  viewCount   Int       @default(0)
+  likeCount   Int       @default(0)
+  theme       String    @default("light")
+  font        String    @default("default")
+  likes       Like[]
+  reports     Report[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
-model Goal {
-  id          String   @id @default(cuid())
-  title       String
-  description String?
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  subGoals    SubGoal[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model Like {
+  id            String      @id @default(cuid())
+  sharedMandal  SharedMandal @relation(fields: [mandalId], references: [id])
+  mandalId      String
+  userId        String
+  createdAt     DateTime    @default(now())
+
+  @@unique([mandalId, userId])
 }
 
-model SubGoal {
-  id          String   @id @default(cuid())
-  title       String
-  tasks       String   // JSON string of string[]
-  goalId      String
-  goal        Goal     @relation(fields: [goalId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model Report {
+  id              String       @id @default(cuid())
+  sharedMandalId  String
+  sharedMandal    SharedMandal @relation(fields: [sharedMandalId], references: [id])
+  userId          String
+  user            User         @relation(fields: [userId], references: [id])
+  reason          String
+  description     String?
+  createdAt       DateTime     @default(now())
 }

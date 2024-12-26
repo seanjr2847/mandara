@@ -81,7 +81,7 @@ export default function SubGoalsPage() {
               <Input
                 value={goal}
                 onChange={(e) => setSubGoal(index, e.target.value)}
-                placeholder={`&quot;세부 목표&quot;를 입력해주세요`}
+                placeholder='"세부 목표"를 입력해주세요'
                 className="text-lg py-6"
               />
             </div>
