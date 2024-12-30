@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { Theme, Font } from "@/lib/share-customization";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface FullMandalProps {
   theme: Theme;
@@ -24,17 +24,6 @@ export function FullMandal({
   subGoalDetails = Array(8).fill({ title: "", tasks: Array(8).fill("") }),
 }: FullMandalProps) {
   const [selectedText, setSelectedText] = useState<string | null>(null);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
 
   const handleCellClick = (text: string | null | undefined) => {
     // 'd' 접두사 제거

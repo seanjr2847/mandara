@@ -35,9 +35,9 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String         @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?        @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
@@ -49,50 +49,53 @@ model User {
 }
 
 model Mandal {
-  id             String   @id @default(cuid())
+  id             String         @id @default(cuid())
   mainGoal       String
-  subGoals       String   // JSON string of string[]
-  subGoalDetails String   // JSON string of object
+  subGoals       String // JSON string of string[]
+  subGoalDetails String // JSON string of object
   author         String?
-  createdAt      DateTime @default(now())
+  createdAt      DateTime       @default(now())
   SharedMandal   SharedMandal[]
+  user           User?          @relation(fields: [author], references: [id])
 }
 
 model SharedMandal {
-  id          String    @id @default(cuid())
-  mandalId    String    @unique
-  mandal      Mandal    @relation(fields: [mandalId], references: [id])
+  id          String   @id @default(cuid())
+  mandalId    String   @unique
+  mandal      Mandal   @relation(fields: [mandalId], references: [id])
   authorName  String
   authorEmail String?
   authorImage String?
   userId      String?
-  viewCount   Int       @default(0)
-  likeCount   Int       @default(0)
-  theme       String    @default("light")
-  font        String    @default("default")
+  user        User?    @relation(fields: [userId], references: [id])
+  viewCount   Int      @default(0)
+  likeCount   Int      @default(0)
+  theme       String   @default("light")
+  font        String   @default("default")
   likes       Like[]
   reports     Report[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Like {
-  id            String      @id @default(cuid())
-  sharedMandal  SharedMandal @relation(fields: [mandalId], references: [id])
-  mandalId      String
-  userId        String
-  createdAt     DateTime    @default(now())
+  id           String       @id @default(cuid())
+  sharedMandal SharedMandal @relation(fields: [mandalId], references: [id])
+  mandalId     String
+  userId       String
+  user         User         @relation(fields: [userId], references: [id])
+  createdAt    DateTime     @default(now())
 
   @@unique([mandalId, userId])
 }
 
 model Report {
-  id              String       @id @default(cuid())
-  sharedMandalId  String
-  sharedMandal    SharedMandal @relation(fields: [sharedMandalId], references: [id])
-  userId          String
-  user            User         @relation(fields: [userId], references: [id])
-  reason          String
-  description     String?
-  createdAt       DateTime     @default(now())
+  id             String       @id @default(cuid())
+  sharedMandalId String
+  sharedMandal   SharedMandal @relation(fields: [sharedMandalId], references: [id])
+  userId         String
+  user           User         @relation(fields: [userId], references: [id])
+  reason         String
+  description    String?
+  createdAt      DateTime     @default(now())
 }
