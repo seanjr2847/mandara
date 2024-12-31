@@ -3,16 +3,6 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
-interface SharedMandalResponse {
-  id: string;
-  mainGoal: string;
-  authorName: string;
-  viewCount: number;
-  likeCount: number;
-  theme: string;
-  createdAt: string;
-}
-
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -57,55 +47,53 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
+    const { searchParams } = new URL(request.url);
     const cursor = searchParams.get("cursor");
     const limit = 12;
 
     const items = await prisma.sharedMandal.findMany({
       take: limit,
-      ...(cursor
-        ? {
-            skip: 1,
-            cursor: {
-              id: cursor,
-            },
-          }
-        : {}),
-      orderBy: {
-        createdAt: "desc",
-      },
+      ...(cursor && {
+        skip: 1,
+        cursor: {
+          id: cursor,
+        },
+      }),
       include: {
-        mandal: true,
-        _count: {
+        mandal: {
           select: {
-            likes: true,
+            mainGoal: true,
           },
         },
+        likes: true,
+      },
+      orderBy: {
+        createdAt: "desc",
       },
     });
 
     const nextCursor = items.length === limit ? items[items.length - 1].id : null;
 
-    const formattedItems = items.map((item) => ({
+    const processedItems = items.map((item) => ({
       id: item.id,
       mainGoal: item.mandal.mainGoal,
       authorName: item.authorName,
       viewCount: item.viewCount,
-      likeCount: item._count.likes,
+      likeCount: item.likes.length,
       theme: item.theme,
       createdAt: item.createdAt.toISOString(),
     }));
 
     return NextResponse.json({
-      items: formattedItems,
+      items: processedItems,
       nextCursor,
     });
   } catch (error) {
-    console.error("Error fetching shared mandals:", error);
+    console.error(error);
     return NextResponse.json(
-      { success: false, error: "Failed to fetch shared mandals" },
+      { error: "Internal Server Error" },
       { status: 500 }
     );
   }

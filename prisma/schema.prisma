@@ -46,6 +46,9 @@ model User {
   SharedMandal  SharedMandal[]
   Like          Like[]
   Report        Report[]
+  Goal          Goal[]
+  Bookmark      Bookmark[]
+  Comment       Comment[]
 }
 
 model Mandal {
@@ -74,17 +77,51 @@ model SharedMandal {
   font        String   @default("default")
   likes       Like[]
   reports     Report[]
+  bookmarks   Bookmark[]
+  comments    Comment[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
+model Goal {
+  id             String   @id @default(cuid())
+  title          String
+  description    String?
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Bookmark {
+  id            String       @id @default(cuid())
+  sharedMandal  SharedMandal @relation(fields: [mandalId], references: [id])
+  mandalId      String
+  userId        String
+  user          User         @relation(fields: [userId], references: [id])
+  createdAt     DateTime     @default(now())
+
+  @@unique([mandalId, userId])
+}
+
+model Comment {
+  id            String       @id @default(cuid())
+  content       String
+  sharedMandal  SharedMandal @relation(fields: [mandalId], references: [id])
+  mandalId      String
+  userId        String
+  user          User         @relation(fields: [userId], references: [id])
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
 model Like {
-  id           String       @id @default(cuid())
-  sharedMandal SharedMandal @relation(fields: [mandalId], references: [id])
-  mandalId     String
-  userId       String
-  user         User         @relation(fields: [userId], references: [id])
-  createdAt    DateTime     @default(now())
+  id            String       @id @default(cuid())
+  sharedMandal  SharedMandal @relation(fields: [mandalId], references: [id])
+  mandalId      String
+  userId        String
+  user          User         @relation(fields: [userId], references: [id])
+  createdAt     DateTime     @default(now())
 
   @@unique([mandalId, userId])
 }
