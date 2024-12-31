@@ -1,5 +1,3 @@
-import { Theme, Font } from "@/types/mandal";
-
 export const themes = {
   light: {
     background: 'bg-white',
