@@ -38,8 +38,8 @@ export function ShareDialog({
   useEffect(() => {
     if (!shareUrl && mandalId) {
       const url = new URL(`${window.location.origin}/share/${mandalId}`);
-      url.searchParams.set("theme", Object.entries(themes).find(([, t]) => t === theme)?.[0] || "default");
-      url.searchParams.set("font", Object.entries(fonts).find(([, f]) => f === font)?.[0] || "default");
+      url.searchParams.set("theme", Object.entries(themes).find(([key]) => key === theme)?.[0] || "default");
+      url.searchParams.set("font", Object.entries(fonts).find(([key]) => key === font)?.[0] || "default");
       url.searchParams.set("author", showAuthor ? "1" : "0");
       url.searchParams.set("date", showDate ? "1" : "0");
       setShareUrl(url.toString());
