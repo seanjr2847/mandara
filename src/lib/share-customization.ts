@@ -1,67 +1,49 @@
-export interface Theme {
-  label: string;
-  background: string;
-  text: string;
-  border: string;
-  className: string;
-  centerClassName: string;
-}
-
-export interface Font {
-  label: string;
-  className: string;
-}
+import { Theme, Font } from "@/types/mandal";
 
 export const themes: Record<string, Theme> = {
-  dark: {
-    label: "다크",
-    background: "bg-slate-900",
-    text: "text-slate-100",
-    border: "border-slate-700",
-    className: "bg-slate-800 border-slate-700 text-slate-100",
-    centerClassName: "bg-slate-700 border-2 border-slate-600 text-slate-100 font-bold text-lg",
+  default: {
+    label: "기본",
+    className: "bg-white border border-slate-300 text-slate-900 shadow-sm hover:bg-slate-50",
+    centerClassName: "bg-slate-900 border-2 border-slate-700 text-white shadow font-bold hover:bg-slate-800",
+    background: "bg-slate-100"
   },
-  light: {
-    label: "라이트",
-    background: "bg-slate-100",
-    text: "text-slate-900",
-    border: "border-slate-200",
-    className: "bg-white border-slate-200 text-black hover:bg-slate-50",
-    centerClassName: "bg-white border-2 border-slate-300 text-black shadow-sm hover:bg-slate-50 font-bold text-lg",
+  snow: {
+    label: "스노우",
+    className: "bg-sky-600 border border-sky-500 text-white shadow-sm hover:bg-sky-500",
+    centerClassName: "bg-sky-800 border-2 border-sky-600 text-white shadow font-bold hover:bg-sky-700",
+    background: "bg-gradient-to-b from-sky-700 to-sky-900"
+  },
+  gold: {
+    label: "골드",
+    className: "bg-amber-600 border border-amber-500 text-white shadow-sm hover:bg-amber-500",
+    centerClassName: "bg-amber-800 border-2 border-amber-600 text-white shadow font-bold hover:bg-amber-700",
+    background: "bg-gradient-to-b from-amber-700 to-amber-900"
   },
   christmas: {
     label: "크리스마스",
-    background: "bg-green-900",
-    text: "text-red-500",
-    border: "border-red-500",
-    className: "bg-green-50 border-red-200 text-green-900",
-    centerClassName: "bg-red-50 border-2 border-red-500 text-red-900 font-bold text-lg",
+    className: "bg-red-600 border border-red-500 text-white shadow-sm hover:bg-red-500",
+    centerClassName: "bg-red-800 border-2 border-red-600 text-white shadow font-bold hover:bg-red-700",
+    background: "bg-gradient-to-b from-red-700 to-red-900"
   },
-  newyear: {
-    label: "설날",
-    background: "bg-red-900",
-    text: "text-yellow-500",
-    border: "border-yellow-500",
-    className: "bg-red-50 border-yellow-200 text-red-900",
-    centerClassName: "bg-yellow-50 border-2 border-yellow-500 text-yellow-900 font-bold text-lg",
-  },
+  forest: {
+    label: "포레스트",
+    className: "bg-emerald-600 border border-emerald-500 text-white shadow-sm hover:bg-emerald-500",
+    centerClassName: "bg-emerald-800 border-2 border-emerald-600 text-white shadow font-bold hover:bg-emerald-700",
+    background: "bg-gradient-to-b from-emerald-700 to-emerald-900"
+  }
 };
 
 export const fonts: Record<string, Font> = {
   default: {
     label: "기본",
-    className: "font-sans",
-  },
-  serif: {
-    label: "명조체",
-    className: "font-serif",
-  },
-  mono: {
-    label: "모노스페이스",
-    className: "font-mono",
+    className: "font-sans"
   },
   gothic: {
     label: "고딕",
-    className: "font-noto-sans-kr",
+    className: "font-gothic"
   },
+  handwriting: {
+    label: "손글씨",
+    className: "font-handwriting"
+  }
 };

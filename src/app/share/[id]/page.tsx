@@ -1,136 +1,104 @@
 "use client";
 
-import { LikeButton } from "@/components/share/like-button";
-import { FullMandal } from "@/components/share/full-mandal";
-import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { themes, fonts, Font } from "@/lib/share-customization";
-import { cn } from "@/lib/utils";
+import { useParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { FullMandal } from "@/components/share/full-mandal";
+import { useRouter } from "next/navigation";
 
 interface SharedMandalData {
-  id: string;
-  mainGoal: string;
-  subGoals: string;
-  subGoalDetails: string;
-  createdAt: string;
-  theme: string;
-  font: keyof typeof fonts;
-  likeCount: number;
-  viewCount: number;
-}
-
-interface GroupedSubGoalDetails {
-  title: string;
-  tasks: string[];
+  success: boolean;
+  error?: string;
+  mandal?: {
+    id: string;
+    mainGoal: string;
+    subGoals: string;
+    subGoalDetails: string;
+    createdAt: string;
+    likeCount: number;
+    viewCount: number;
+  };
 }
 
 export default function SharePage() {
+  const router = useRouter();
   const params = useParams();
-  const mandalId = typeof params.id === "string" ? params.id : params.id?.[0];
   const [mainGoal, setMainGoal] = useState("");
   const [subGoals, setSubGoals] = useState<string[]>([]);
-  const [subGoalDetails, setSubGoalDetails] = useState<string[]>([]);
-  const [theme, setTheme] = useState("light");
-  const [font, setFont] = useState<keyof typeof fonts>("default");
+  const [subGoalDetails, setSubGoalDetails] = useState<{ title: string; tasks: string[] }[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [likeCount, setLikeCount] = useState(0);
-  const [viewCount, setViewCount] = useState(0);
-  const [createdAt, setCreatedAt] = useState("");
 
   useEffect(() => {
-    const fetchSharedMandal = async () => {
+    const fetchMandal = async () => {
       try {
-        const response = await fetch(`/api/share/${mandalId}`);
+        const response = await fetch(`/api/share/${params.id}`);
         if (!response.ok) {
-          throw new Error("Failed to fetch shared mandal");
+          throw new Error("Failed to fetch mandal");
         }
+        
         const data: SharedMandalData = await response.json();
-        setMainGoal(data.mainGoal);
-        
-        // Parse subGoals and subGoalDetails
-        const parsedSubGoals = JSON.parse(data.subGoals);
-        const parsedSubGoalDetails = JSON.parse(data.subGoalDetails);
-        
-        setSubGoals(parsedSubGoals);
-        setSubGoalDetails(parsedSubGoalDetails);
-        
-        setCreatedAt(data.createdAt);
-        setTheme(data.theme);
-        setFont(data.font);
-        setLikeCount(data.likeCount);
-        setViewCount(data.viewCount);
-        setLoading(false);
+        if (data.success && data.mandal) {
+          setMainGoal(data.mandal.mainGoal);
+          setSubGoals(JSON.parse(data.mandal.subGoals));
+          setSubGoalDetails(JSON.parse(data.mandal.subGoalDetails));
+        } else {
+          throw new Error(data.error || "Failed to fetch mandal");
+        }
       } catch (error) {
-        console.error("Error fetching shared mandal:", error);
-        setError(error instanceof Error ? error.message : "알 수 없는 오류가 발생했습니다.");
+        console.error("Error fetching mandal:", error);
+      } finally {
         setLoading(false);
       }
     };
 
-    if (mandalId) {
-      fetchSharedMandal();
+    if (params.id) {
+      fetchMandal();
     }
-  }, [mandalId]);
-
-  if (!mandalId) {
-    return <div>잘못된 접근입니다.</div>;
-  }
+  }, [params.id]);
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <p>로딩 중...</p>
+      <div className="min-h-screen bg-slate-950 py-8 px-4">
+        <div className="container max-w-screen-lg mx-auto">
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-3xl font-bold text-white">만다라트</h1>
+            <Button onClick={() => router.push("/create")}>새로 만들기</Button>
+          </div>
+          <div className="text-center py-8 text-slate-300">로딩 중...</div>
+        </div>
       </div>
     );
   }
 
-  if (error) {
+  if (!mainGoal || subGoals.length === 0) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <p className="text-red-500">{error}</p>
+      <div className="min-h-screen bg-slate-950 py-8 px-4">
+        <div className="container max-w-screen-lg mx-auto">
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-3xl font-bold text-white">만다라트</h1>
+            <Button onClick={() => router.push("/create")}>새로 만들기</Button>
+          </div>
+          <div className="text-center py-8">
+            <p className="text-slate-300">만다라트를 찾을 수 없습니다.</p>
+          </div>
+        </div>
       </div>
     );
   }
-
-  // subGoalDetails를 8개씩 그룹화하여 result 페이지와 동일한 형태로 변환
-  const groupedSubGoalDetails: GroupedSubGoalDetails[] = subGoals.map((subGoal, index) => ({
-    title: subGoal,
-    tasks: subGoalDetails.slice(index * 8, (index + 1) * 8)
-  }));
-
-  const selectedFont: Font = fonts[font];
 
   return (
-    <main className={cn(
-      "min-h-screen py-8 px-4",
-      themes[theme as keyof typeof themes].background,
-      themes[theme as keyof typeof themes].text,
-      selectedFont.className
-    )}>
-      <div className="container max-w-screen-xl mx-auto space-y-8">
+    <main className="min-h-screen bg-slate-950 py-8 px-4">
+      <div className="container max-w-screen-lg mx-auto">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-white">만다라트</h1>
+          <Button onClick={() => router.push("/create")}>새로 만들기</Button>
+        </div>
+
         <FullMandal
-          theme={themes[theme as keyof typeof themes]}
-          font={selectedFont}
           mainGoal={mainGoal}
           subGoals={subGoals}
-          subGoalDetails={groupedSubGoalDetails}
-          showAuthor={true}
-          showDate={true}
+          subGoalDetails={subGoalDetails}
         />
-
-        {createdAt && (
-          <div className="text-sm text-muted-foreground">
-            <p>작성일: {new Date(createdAt).toLocaleDateString()}</p>
-          </div>
-        )}
-        
-        <div className="flex items-center gap-4">
-          <LikeButton mandalId={mandalId} initialLikeCount={likeCount} />
-          <span className="text-sm text-muted-foreground">
-            조회수: {viewCount}
-          </span>
-        </div>
       </div>
     </main>
   );

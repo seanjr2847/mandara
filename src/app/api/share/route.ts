@@ -47,8 +47,39 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params?: { id?: string } } = {}
+) {
   try {
+    // 특정 만다라트 조회
+    if (params?.id) {
+      const mandal = await prisma.mandal.findUnique({
+        where: { id: params.id },
+        include: {
+          SharedMandal: true,
+        },
+      });
+
+      if (!mandal) {
+        return NextResponse.json({ success: false, error: "Mandal not found" });
+      }
+
+      return NextResponse.json({
+        success: true,
+        mandal: {
+          id: mandal.id,
+          mainGoal: mandal.mainGoal,
+          subGoals: mandal.subGoals,
+          subGoalDetails: mandal.subGoalDetails,
+          createdAt: mandal.createdAt.toISOString(),
+          likeCount: mandal.SharedMandal?.[0]?.likeCount || 0,
+          viewCount: mandal.SharedMandal?.[0]?.viewCount || 0,
+        },
+      });
+    }
+
+    // 만다라트 목록 조회
     const { searchParams } = new URL(request.url);
     const cursor = searchParams.get("cursor");
     const limit = 12;

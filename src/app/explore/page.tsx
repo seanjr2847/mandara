@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { themes } from "@/lib/share-customization";
 import { cn } from "@/lib/utils";
 
 interface SharedMandal {
@@ -13,7 +12,6 @@ interface SharedMandal {
   authorName: string;
   viewCount: number;
   likeCount: number;
-  theme: string;
   createdAt: string;
 }
 
@@ -65,11 +63,7 @@ export default function ExplorePage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {sharedMandals.map((mandal) => (
           <Link key={mandal.id} href={`/share/${mandal.id}`}>
-            <Card className={cn(
-              "hover:shadow-lg transition-shadow cursor-pointer",
-              themes[mandal.theme as keyof typeof themes].background,
-              themes[mandal.theme as keyof typeof themes].text
-            )}>
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
               <CardHeader>
                 <CardTitle className="line-clamp-2">{mandal.mainGoal}</CardTitle>
               </CardHeader>

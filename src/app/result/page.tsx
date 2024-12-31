@@ -3,23 +3,20 @@
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { FullMandal } from "@/components/result/full-mandal";
-import { CustomizationOptions } from "@/components/share/customization-options";
+import { FullMandal } from "@/components/share/full-mandal";
 import { ShareDialog } from "@/components/result/share-dialog";
-import { themes, fonts } from "@/lib/share-customization";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useMandalStore } from "@/store/mandal";
+import { useToast } from "@/components/ui/use-toast";
 
 function ResultContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [theme, setTheme] = useState("dark");
-  const [font, setFont] = useState("default");
-  const [showAuthor, setShowAuthor] = useState(true);
-  const [showDate, setShowDate] = useState(true);
   const [mandalId, setMandalId] = useState<string | undefined>(undefined);
   const { mainGoal, subGoals, subGoalDetails, reset: resetMandal } = useMandalStore();
+  const { toast } = useToast();
+  const [isSharing, setIsSharing] = useState(false);
 
   useEffect(() => {
     const id = searchParams.get("id");
@@ -30,50 +27,77 @@ function ResultContent() {
 
   const handleCreateNew = () => {
     resetMandal();
-    localStorage.removeItem("mandalHistory");
     router.push("/create");
   };
 
-  return (
-    <main className={cn(
-      "min-h-screen py-8 px-4",
-      themes[theme as keyof typeof themes].background
-    )}>
-      <div className="max-w-7xl mx-auto space-y-8">
-        <FullMandal
-          theme={themes[theme as keyof typeof themes]}
-          font={fonts[font as keyof typeof fonts]}
-          showAuthor={showAuthor}
-          showDate={showDate}
-          mainGoal={mainGoal}
-          subGoals={subGoals}
-          subGoalDetails={subGoalDetails}
-        />
+  const handleShare = async () => {
+    if (isSharing) return;
+    
+    setIsSharing(true);
+    try {
+      const response = await fetch("/api/share", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          mainGoal,
+          subGoals,
+          subGoalDetails
+        }),
+      });
 
-        <div className="bg-slate-800 rounded-lg p-6 max-w-2xl mx-auto">
-          <h2 className="text-2xl font-bold mb-4 text-slate-100">커스터마이즈</h2>
-          <CustomizationOptions
-            theme={theme}
-            font={font}
-            showAuthor={showAuthor}
-            showDate={showDate}
-            onThemeChange={setTheme}
-            onFontChange={setFont}
-            onShowAuthorChange={setShowAuthor}
-            onShowDateChange={setShowDate}
-          />
+      const data = await response.json();
+      if (data.success) {
+        toast({
+          title: "공유 링크가 생성되었습니다",
+          description: "클립보드에 복사되었습니다.",
+        });
+        await navigator.clipboard.writeText(
+          `${window.location.origin}/share/${data.id}`
+        );
+      } else {
+        throw new Error("Failed to share");
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "공유 실패",
+        description: "잠시 후 다시 시도해주세요.",
+      });
+    } finally {
+      setIsSharing(false);
+    }
+  };
+
+  return (
+    <main className="min-h-screen bg-slate-950 py-8 px-4">
+      <div className="container max-w-screen-lg mx-auto space-y-8">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+          <h1 className="text-3xl font-bold text-white">만다라트 결과</h1>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Button 
+              variant="outline" 
+              onClick={handleCreateNew}
+              className="bg-slate-800 text-slate-100 border-slate-700 hover:bg-slate-700 hover:text-white"
+            >
+              새로운 만다라트 만들기
+            </Button>
+            <Button
+              onClick={handleShare}
+              disabled={isSharing}
+              className="bg-slate-700 hover:bg-slate-600"
+            >
+              {isSharing ? "공유 중..." : "공개하기"}
+            </Button>
+          </div>
         </div>
 
-        <div className="flex justify-between items-center">
-          <Button variant="outline" onClick={handleCreateNew}>
-            새로운 만다라트 만들기
-          </Button>
-          <ShareDialog
-            mandalId={mandalId}
-            theme={themes[theme as keyof typeof themes]}
-            font={fonts[font as keyof typeof fonts]}
-            showAuthor={showAuthor}
-            showDate={showDate}
+        <div className="w-full overflow-x-auto">
+          <FullMandal
+            mainGoal={mainGoal}
+            subGoals={subGoals}
+            subGoalDetails={subGoalDetails}
           />
         </div>
       </div>
@@ -83,7 +107,7 @@ function ResultContent() {
 
 export default function ResultPage() {
   return (
-    <Suspense fallback={<div>로딩 중...</div>}>
+    <Suspense>
       <ResultContent />
     </Suspense>
   );
