@@ -25,6 +25,20 @@ export function FullMandal({
     const sectionIndex = sectionRow * 3 + sectionCol;
     const isCenter = sectionRow === 1 && sectionCol === 1;
     
+    // 중앙 섹션의 서브골 매핑
+    const centerSubGoalMapping = [
+      [7, 0, 1],
+      [6, -1, 2],
+      [5, 4, 3]
+    ];
+
+    // 세부 목표 매핑 (중앙을 제외한 8칸)
+    const detailTaskMapping = [
+      [0, 1, 2],
+      [7, -1, 3],
+      [6, 5, 4]
+    ];
+    
     return (
       <div key={`section-${sectionRow}-${sectionCol}`} className="grid grid-cols-3 gap-0.5 bg-gray-700 p-0.5 rounded">
         {Array(9)
@@ -37,39 +51,24 @@ export function FullMandal({
             if (isCenter) {
               // 중앙 섹션
               if (row === 1 && col === 1) {
-                // 중앙 목표
                 text = mainGoal;
               } else {
-                // 8개의 서브 목표
-                const subGoalIndex = (() => {
-                  const positions = [
-                    [0, 1], [1, 0], [1, 2], [2, 1], // 상하좌우
-                    [0, 0], [0, 2], [2, 0], [2, 2]  // 대각선
-                  ];
-                  const idx = positions.findIndex(([r, c]) => r === row && c === col);
-                  return idx !== -1 ? idx : -1;
-                })();
-                text = subGoalIndex !== -1 ? subGoals[subGoalIndex] : "";
+                const mappedIndex = centerSubGoalMapping[row][col];
+                if (mappedIndex !== -1) {
+                  text = subGoals[mappedIndex] || "";
+                }
               }
             } else {
               // 주변 섹션
               if (row === 1 && col === 1) {
-                // 각 섹션의 중앙 (서브 목표)
                 text = subGoals[sectionIndex] || "";
               } else {
-                // 세부 목표
                 const subDetail = subGoalDetails[sectionIndex];
                 if (subDetail?.tasks) {
-                  const taskIndex = (() => {
-                    const positions = [
-                      [0, 0], [0, 1], [0, 2],
-                      [1, 0],         [1, 2],
-                      [2, 0], [2, 1], [2, 2]
-                    ];
-                    const idx = positions.findIndex(([r, c]) => r === row && c === col);
-                    return idx;
-                  })();
-                  text = taskIndex !== -1 ? (subDetail.tasks[taskIndex] || "") : "";
+                  const mappedIndex = detailTaskMapping[row][col];
+                  if (mappedIndex !== -1) {
+                    text = subDetail.tasks[mappedIndex] || "";
+                  }
                 }
               }
             }
