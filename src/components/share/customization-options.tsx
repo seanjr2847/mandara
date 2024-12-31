@@ -1,16 +1,16 @@
 "use client";
 
-import { themes, fonts } from "@/lib/share-customization";
+import { themes, fonts, ThemeType, FontType } from "@/lib/share-customization";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 
 interface CustomizationOptionsProps {
-  theme: string;
-  font: string;
+  theme: ThemeType;
+  font: FontType;
   showAuthor: boolean;
   showDate: boolean;
-  onThemeChange: (theme: string) => void;
-  onFontChange: (font: string) => void;
+  onThemeChange: (theme: ThemeType) => void;
+  onFontChange: (font: FontType) => void;
   onShowAuthorChange: (show: boolean) => void;
   onShowDateChange: (show: boolean) => void;
 }
@@ -36,7 +36,7 @@ export function CustomizationOptions({
                 {Object.entries(themes).map(([key, themeOption]) => (
                   <button
                     key={key}
-                    onClick={() => onThemeChange(key)}
+                    onClick={() => onThemeChange(key as ThemeType)}
                     className={`px-4 py-2 rounded-lg transition-colors ${
                       theme === key
                         ? "bg-red-500 text-white"
@@ -54,7 +54,7 @@ export function CustomizationOptions({
                 {Object.entries(fonts).map(([key, fontOption]) => (
                   <button
                     key={key}
-                    onClick={() => onFontChange(key)}
+                    onClick={() => onFontChange(key as FontType)}
                     className={`px-4 py-2 rounded-lg transition-colors ${
                       font === key
                         ? "bg-red-500 text-white"
