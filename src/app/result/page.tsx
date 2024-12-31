@@ -2,7 +2,7 @@
 
 import { useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import Button from "@/components/ui/button/client";
 import { FullMandal } from "@/components/share/full-mandal";
 import { useRouter } from "next/navigation";
 import { useMandalStore } from "@/store/mandal";

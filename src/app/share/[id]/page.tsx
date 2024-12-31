@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { useParams, useRouter } from "next/navigation";
+import Button from "@/components/ui/button/client";
 import { FullMandal } from "@/components/share/full-mandal";
-import { useRouter } from "next/navigation";
 
 interface SharedMandalData {
   success: boolean;

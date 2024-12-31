@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
+import Button from "@/components/ui/button/client";
 
 interface SharedMandal {
   id: string;
@@ -82,12 +83,12 @@ export default function ExplorePage() {
 
       {hasMore && (
         <div className="mt-8 text-center">
-          <button
+          <Button
             className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
             onClick={() => fetchMandals(cursor || undefined)}
           >
             더 보기
-          </button>
+          </Button>
         </div>
       )}
     </div>

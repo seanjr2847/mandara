@@ -1,10 +1,10 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useMandalStore } from "@/store/mandal";
 import { useRouter } from "next/navigation";
+import Button from "@/components/ui/button/client";
+import { useMandalStore } from "@/store/mandal";
 import { useEffect, useState } from "react";
+import { Input } from "@/components/ui/input";
 
 export default function SubGoalsPage() {
   const router = useRouter();
@@ -51,6 +51,10 @@ export default function SubGoalsPage() {
     }
   };
 
+  const handleSubGoalChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    setSubGoal(index, e.target.value);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto space-y-8">
@@ -80,7 +84,7 @@ export default function SubGoalsPage() {
               </label>
               <Input
                 value={goal}
-                onChange={(e) => setSubGoal(index, e.target.value)}
+                onChange={(e) => handleSubGoalChange(e, index)}
                 placeholder='"세부 목표"를 입력해주세요'
                 className="text-lg py-6"
               />

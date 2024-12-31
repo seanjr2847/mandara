@@ -1,9 +1,8 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useMandalStore } from "@/store/mandal";
 import { useRouter } from "next/navigation";
+import Button from "@/components/ui/button/client";
+import { useMandalStore } from "@/store/mandal";
 import { useState } from "react";
 
 export default function CreatePage() {
@@ -88,7 +87,7 @@ export default function CreatePage() {
           </p>
 
           <div className="space-y-2">
-            <Input
+            <input
               type="text"
               placeholder="메인 목표를 입력하세요"
               value={mainGoal}
