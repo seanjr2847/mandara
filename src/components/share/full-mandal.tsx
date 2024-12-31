@@ -1,6 +1,5 @@
 "use client";
 
-import type { FC } from "react";
 import { cn } from "@/lib/utils";
 import { Cell } from "./cell";
 
@@ -11,12 +10,12 @@ interface FullMandalProps {
   className?: string;
 }
 
-export const FullMandal: FC<FullMandalProps> = ({
+export function FullMandal({
   mainGoal = "",
   subGoals = Array(8).fill(""),
   subGoalDetails = Array(8).fill({ title: "", tasks: Array(8).fill("") }),
   className
-}) => {
+}: FullMandalProps) {
   const handleCellClick = (text: string) => {
     if (!text) return;
     navigator.clipboard.writeText(text);
@@ -29,50 +28,64 @@ export const FullMandal: FC<FullMandalProps> = ({
     return r * 3 + c;
   };
 
-  return (
-    <div className={cn("grid grid-cols-9 gap-1 bg-gray-300 p-1 rounded-lg", className)}>
-      {Array(9)
-        .fill(null)
-        .map((_, row) =>
-          Array(9)
-            .fill(null)
-            .map((_, col) => {
-              const detailIndex = getDetailIndex(row, col);
-              let text = "";
+  const renderSection = (sectionRow: number, sectionCol: number) => {
+    const sectionIndex = sectionRow * 3 + sectionCol;
+    const isCenter = sectionRow === 1 && sectionCol === 1;
+    
+    return (
+      <div key={`section-${sectionRow}-${sectionCol}`} className="grid grid-cols-3 gap-0.5 bg-gray-200 p-0.5">
+        {Array(9)
+          .fill(null)
+          .map((_, index) => {
+            const row = Math.floor(index / 3);
+            const col = index % 3;
+            let text = "";
 
-              if (row === 4 && col === 4) {
+            if (isCenter) {
+              if (row === 1 && col === 1) {
                 text = mainGoal;
-              } else if (row % 3 === 1 && col % 3 === 1 && !(row === 4 && col === 4)) {
-                const subGoalIndex = getDetailIndex(row, col);
+              } else {
+                const subGoalIndex = getDetailIndex(row + sectionRow * 3, col + sectionCol * 3);
                 text = subGoals[subGoalIndex] || "";
-              } else if (detailIndex !== -1) {
-                const subDetail = subGoalDetails[detailIndex];
-                if (subDetail) {
-                  const localRow = row % 3;
-                  const localCol = col % 3;
-                  const taskIndex = localRow * 3 + localCol;
-                  if (subDetail.tasks && subDetail.tasks[taskIndex]) {
-                    text = subDetail.tasks[taskIndex];
-                  }
+              }
+            } else {
+              if (row === 1 && col === 1) {
+                text = subGoals[sectionIndex] || "";
+              } else {
+                const subDetail = subGoalDetails[sectionIndex];
+                if (subDetail?.tasks) {
+                  text = subDetail.tasks[row * 3 + col] || "";
                 }
               }
+            }
 
-              return (
-                <Cell
-                  key={`${row}-${col}`}
-                  text={text}
-                  className={cn(
-                    "bg-white rounded-md transition-all duration-200 hover:bg-gray-50",
-                    row === 4 && col === 4 && "bg-yellow-50 font-bold text-lg min-h-[80px]",
-                    (row % 3 === 1 && col % 3 === 1) && "bg-blue-50 font-semibold min-h-[70px]",
-                    (row % 3 === 1 || col % 3 === 1) && "shadow-sm",
-                    Math.floor(row / 3) === 1 && Math.floor(col / 3) === 1 && "scale-105"
-                  )}
-                  onClick={handleCellClick}
-                />
-              );
-            })
-        )}
+            return (
+              <Cell
+                key={`cell-${row}-${col}`}
+                text={text}
+                className={cn(
+                  "aspect-square flex items-center justify-center p-2 text-center",
+                  isCenter && row === 1 && col === 1 && "bg-yellow-50 font-bold text-lg",
+                  !isCenter && row === 1 && col === 1 && "bg-blue-50 font-semibold",
+                  "bg-white hover:bg-gray-50"
+                )}
+                onClick={handleCellClick}
+              />
+            );
+          })}
+      </div>
+    );
+  };
+
+  return (
+    <div className={cn("grid grid-cols-3 gap-1 bg-gray-300 p-1 rounded-lg w-full max-w-5xl mx-auto", className)}>
+      {Array(9)
+        .fill(null)
+        .map((_, index) => {
+          const row = Math.floor(index / 3);
+          const col = index % 3;
+          return renderSection(row, col);
+        })}
     </div>
   );
-};
+}
