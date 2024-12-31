@@ -16,6 +16,12 @@ export function FullMandal({
   subGoalDetails = Array(8).fill({ title: "", tasks: Array(8).fill("") }),
   className
 }: FullMandalProps) {
+  console.log('FullMandal props:', {
+    mainGoal,
+    subGoals,
+    subGoalDetails
+  });
+
   const handleCellClick = (text: string) => {
     if (!text) return;
     navigator.clipboard.writeText(text);
@@ -25,20 +31,11 @@ export function FullMandal({
     const sectionIndex = sectionRow * 3 + sectionCol;
     const isCenter = sectionRow === 1 && sectionCol === 1;
     
-    // 중앙 섹션의 서브골 매핑
-    const centerSubGoalMapping = [
-      [7, 0, 1],
-      [6, -1, 2],
-      [5, 4, 3]
-    ];
+    console.log(`Rendering section [${sectionRow}, ${sectionCol}]:`, {
+      sectionIndex,
+      isCenter
+    });
 
-    // 세부 목표 매핑 (중앙을 제외한 8칸)
-    const detailTaskMapping = [
-      [0, 1, 2],
-      [7, -1, 3],
-      [6, 5, 4]
-    ];
-    
     return (
       <div key={`section-${sectionRow}-${sectionCol}`} className="grid grid-cols-3 gap-0.5 bg-gray-700 p-0.5 rounded">
         {Array(9)
@@ -53,9 +50,21 @@ export function FullMandal({
               if (row === 1 && col === 1) {
                 text = mainGoal;
               } else {
-                const mappedIndex = centerSubGoalMapping[row][col];
-                if (mappedIndex !== -1) {
-                  text = subGoals[mappedIndex] || "";
+                // 8개의 서브 목표를 시계 방향으로 배치
+                const positions = [
+                  { row: 0, col: 1, index: 0 }, // 상
+                  { row: 0, col: 2, index: 1 }, // 상우
+                  { row: 1, col: 2, index: 2 }, // 우
+                  { row: 2, col: 2, index: 3 }, // 하우
+                  { row: 2, col: 1, index: 4 }, // 하
+                  { row: 2, col: 0, index: 5 }, // 하좌
+                  { row: 1, col: 0, index: 6 }, // 좌
+                  { row: 0, col: 0, index: 7 }  // 상좌
+                ];
+
+                const position = positions.find(p => p.row === row && p.col === col);
+                if (position) {
+                  text = subGoals[position.index] || "";
                 }
               }
             } else {
@@ -64,10 +73,33 @@ export function FullMandal({
                 text = subGoals[sectionIndex] || "";
               } else {
                 const subDetail = subGoalDetails[sectionIndex];
+                console.log(`Section [${sectionRow}, ${sectionCol}] Cell [${row}, ${col}]:`, {
+                  sectionIndex,
+                  subDetail,
+                  tasks: subDetail?.tasks
+                });
+
                 if (subDetail?.tasks) {
-                  const mappedIndex = detailTaskMapping[row][col];
-                  if (mappedIndex !== -1) {
-                    text = subDetail.tasks[mappedIndex] || "";
+                  // 8개의 세부 목표를 시계 방향으로 배치
+                  const positions = [
+                    { row: 0, col: 0, index: 0 },
+                    { row: 0, col: 1, index: 1 },
+                    { row: 0, col: 2, index: 2 },
+                    { row: 1, col: 2, index: 3 },
+                    { row: 2, col: 2, index: 4 },
+                    { row: 2, col: 1, index: 5 },
+                    { row: 2, col: 0, index: 6 },
+                    { row: 1, col: 0, index: 7 }
+                  ];
+
+                  const position = positions.find(p => p.row === row && p.col === col);
+                  if (position) {
+                    text = subDetail.tasks[position.index] || "";
+                    console.log('Found task:', {
+                      position,
+                      text,
+                      allTasks: subDetail.tasks
+                    });
                   }
                 }
               }
