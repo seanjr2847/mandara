@@ -33,7 +33,7 @@ export function FullMandal({
     const isCenter = sectionRow === 1 && sectionCol === 1;
     
     return (
-      <div key={`section-${sectionRow}-${sectionCol}`} className="grid grid-cols-3 gap-0.5 bg-gray-200 p-0.5">
+      <div key={`section-${sectionRow}-${sectionCol}`} className="grid grid-cols-3 gap-0.5 bg-gray-700 p-0.5 rounded">
         {Array(9)
           .fill(null)
           .map((_, index) => {
@@ -64,10 +64,10 @@ export function FullMandal({
                 key={`cell-${row}-${col}`}
                 text={text}
                 className={cn(
-                  "aspect-square flex items-center justify-center p-2 text-center",
-                  isCenter && row === 1 && col === 1 && "bg-yellow-50 font-bold text-lg",
-                  !isCenter && row === 1 && col === 1 && "bg-blue-50 font-semibold",
-                  "bg-white hover:bg-gray-50"
+                  "border border-gray-200 cursor-pointer text-black",
+                  isCenter && row === 1 && col === 1 && "bg-amber-100 font-bold text-lg",
+                  !isCenter && row === 1 && col === 1 && "bg-sky-100 font-semibold",
+                  "bg-white hover:bg-gray-100 transition-colors"
                 )}
                 onClick={handleCellClick}
               />
@@ -78,7 +78,7 @@ export function FullMandal({
   };
 
   return (
-    <div className={cn("grid grid-cols-3 gap-1 bg-gray-300 p-1 rounded-lg w-full max-w-5xl mx-auto", className)}>
+    <div className={cn("grid grid-cols-3 gap-1 bg-gray-800 p-1 rounded-lg w-full max-w-5xl mx-auto aspect-square", className)}>
       {Array(9)
         .fill(null)
         .map((_, index) => {
