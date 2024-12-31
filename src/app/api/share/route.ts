@@ -6,6 +6,14 @@ import { authOptions } from "@/lib/auth";
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
+    
+    if (!session || !session.user) {
+      return NextResponse.json(
+        { success: false, error: "인증이 필요합니다." },
+        { status: 401 }
+      );
+    }
+
     const { mainGoal, subGoals, subGoalDetails } = await req.json();
 
     if (!mainGoal || !subGoals || !subGoalDetails) {
@@ -27,10 +35,10 @@ export async function POST(req: NextRequest) {
     const sharedMandal = await prisma.sharedMandal.create({
       data: {
         mandalId: mandal.id,
-        authorName: session?.user?.name || "익명",
+        authorName: session.user.name || "익명",
         theme: "light",
         font: "default",
-        userId: session?.user?.id || null,
+        userId: session.user.id,
       },
     });
 
