@@ -21,13 +21,6 @@ export function FullMandal({
     navigator.clipboard.writeText(text);
   };
 
-  const getDetailIndex = (row: number, col: number) => {
-    if (row === 1 && col === 1) return -1;
-    const r = Math.floor(row / 3);
-    const c = Math.floor(col / 3);
-    return r * 3 + c;
-  };
-
   const renderSection = (sectionRow: number, sectionCol: number) => {
     const sectionIndex = sectionRow * 3 + sectionCol;
     const isCenter = sectionRow === 1 && sectionCol === 1;
@@ -42,19 +35,41 @@ export function FullMandal({
             let text = "";
 
             if (isCenter) {
+              // 중앙 섹션
               if (row === 1 && col === 1) {
+                // 중앙 목표
                 text = mainGoal;
               } else {
-                const subGoalIndex = getDetailIndex(row + sectionRow * 3, col + sectionCol * 3);
-                text = subGoals[subGoalIndex] || "";
+                // 8개의 서브 목표
+                const subGoalIndex = (() => {
+                  const positions = [
+                    [0, 1], [1, 0], [1, 2], [2, 1], // 상하좌우
+                    [0, 0], [0, 2], [2, 0], [2, 2]  // 대각선
+                  ];
+                  const idx = positions.findIndex(([r, c]) => r === row && c === col);
+                  return idx !== -1 ? idx : -1;
+                })();
+                text = subGoalIndex !== -1 ? subGoals[subGoalIndex] : "";
               }
             } else {
+              // 주변 섹션
               if (row === 1 && col === 1) {
+                // 각 섹션의 중앙 (서브 목표)
                 text = subGoals[sectionIndex] || "";
               } else {
+                // 세부 목표
                 const subDetail = subGoalDetails[sectionIndex];
                 if (subDetail?.tasks) {
-                  text = subDetail.tasks[row * 3 + col] || "";
+                  const taskIndex = (() => {
+                    const positions = [
+                      [0, 0], [0, 1], [0, 2],
+                      [1, 0],         [1, 2],
+                      [2, 0], [2, 1], [2, 2]
+                    ];
+                    const idx = positions.findIndex(([r, c]) => r === row && c === col);
+                    return idx;
+                  })();
+                  text = taskIndex !== -1 ? (subDetail.tasks[taskIndex] || "") : "";
                 }
               }
             }
@@ -64,8 +79,8 @@ export function FullMandal({
                 key={`cell-${row}-${col}`}
                 text={text}
                 className={cn(
-                  "border border-gray-200 cursor-pointer text-black",
-                  isCenter && row === 1 && col === 1 && "bg-amber-100 font-bold text-lg",
+                  "border border-gray-200 text-black",
+                  isCenter && row === 1 && col === 1 && "bg-amber-100 font-bold text-base",
                   !isCenter && row === 1 && col === 1 && "bg-sky-100 font-semibold",
                   "bg-white hover:bg-gray-100 transition-colors"
                 )}
@@ -78,7 +93,7 @@ export function FullMandal({
   };
 
   return (
-    <div className={cn("grid grid-cols-3 gap-1 bg-gray-800 p-1 rounded-lg w-full max-w-5xl mx-auto aspect-square", className)}>
+    <div className={cn("grid grid-cols-3 gap-1 bg-gray-800 p-1 rounded-lg w-full max-w-6xl mx-auto", className)}>
       {Array(9)
         .fill(null)
         .map((_, index) => {

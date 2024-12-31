@@ -18,14 +18,12 @@ export function Cell({ text, className, onClick }: CellProps) {
   return (
     <div
       className={cn(
-        "w-full pb-[100%] relative",
+        "flex items-center justify-center min-h-[120px] p-3 text-center cursor-pointer",
         className
       )}
       onClick={handleClick}
     >
-      <div className="absolute inset-0 flex items-center justify-center p-2">
-        <p className="text-sm line-clamp-3 text-center break-keep">{text}</p>
-      </div>
+      <p className="text-sm w-full break-keep">{text}</p>
     </div>
   );
 }
