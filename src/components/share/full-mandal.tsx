@@ -16,10 +16,11 @@ export function FullMandal({
   subGoalDetails = Array(8).fill({ title: "", tasks: Array(8).fill("") }),
   className
 }: FullMandalProps) {
-  console.log('FullMandal props:', {
+  console.log('Initial Props:', {
     mainGoal,
-    subGoals,
-    subGoalDetails
+    subGoalsLength: subGoals.length,
+    subGoalDetailsLength: subGoalDetails.length,
+    firstSubGoalTasks: subGoalDetails[0]?.tasks
   });
 
   const handleCellClick = (text: string) => {
@@ -27,15 +28,22 @@ export function FullMandal({
     navigator.clipboard.writeText(text);
   };
 
-  const renderSection = (sectionRow: number, sectionCol: number) => {
-    const sectionIndex = sectionRow * 3 + sectionCol;
-    const isCenter = sectionRow === 1 && sectionCol === 1;
-    
-    console.log(`Rendering section [${sectionRow}, ${sectionCol}]:`, {
-      sectionIndex,
-      isCenter
-    });
+  // 섹션 인덱스를 계산하는 함수
+  const getSectionIndex = (row: number, col: number) => {
+    if (row === 1 && col === 1) return -1; // 중앙 섹션
+    return row * 3 + col;
+  };
 
+  const renderSection = (sectionRow: number, sectionCol: number) => {
+    const sectionIndex = getSectionIndex(sectionRow, sectionCol);
+    const isCenter = sectionRow === 1 && sectionCol === 1;
+
+    console.log(`Rendering Section [${sectionRow},${sectionCol}]:`, {
+      sectionIndex,
+      isCenter,
+      hasSubGoalDetails: sectionIndex !== -1 ? !!subGoalDetails[sectionIndex] : null
+    });
+    
     return (
       <div key={`section-${sectionRow}-${sectionCol}`} className="grid grid-cols-3 gap-0.5 bg-gray-700 p-0.5 rounded">
         {Array(9)
@@ -67,38 +75,34 @@ export function FullMandal({
                   text = subGoals[position.index] || "";
                 }
               }
-            } else {
+            } else if (sectionIndex >= 0 && sectionIndex < subGoalDetails.length) {
               // 주변 섹션
               if (row === 1 && col === 1) {
                 text = subGoals[sectionIndex] || "";
               } else {
                 const subDetail = subGoalDetails[sectionIndex];
-                console.log(`Section [${sectionRow}, ${sectionCol}] Cell [${row}, ${col}]:`, {
-                  sectionIndex,
-                  subDetail,
-                  tasks: subDetail?.tasks
-                });
-
+                
                 if (subDetail?.tasks) {
                   // 8개의 세부 목표를 시계 방향으로 배치
                   const positions = [
-                    { row: 0, col: 0, index: 0 },
-                    { row: 0, col: 1, index: 1 },
-                    { row: 0, col: 2, index: 2 },
-                    { row: 1, col: 2, index: 3 },
-                    { row: 2, col: 2, index: 4 },
-                    { row: 2, col: 1, index: 5 },
-                    { row: 2, col: 0, index: 6 },
-                    { row: 1, col: 0, index: 7 }
+                    { row: 0, col: 1, index: 0 }, // 상
+                    { row: 0, col: 2, index: 1 }, // 상우
+                    { row: 1, col: 2, index: 2 }, // 우
+                    { row: 2, col: 2, index: 3 }, // 하우
+                    { row: 2, col: 1, index: 4 }, // 하
+                    { row: 2, col: 0, index: 5 }, // 하좌
+                    { row: 1, col: 0, index: 6 }, // 좌
+                    { row: 0, col: 0, index: 7 }  // 상좌
                   ];
 
                   const position = positions.find(p => p.row === row && p.col === col);
                   if (position) {
                     text = subDetail.tasks[position.index] || "";
-                    console.log('Found task:', {
-                      position,
+                    console.log(`Cell data [${sectionRow},${sectionCol}][${row},${col}]:`, {
+                      sectionIndex,
+                      positionIndex: position.index,
                       text,
-                      allTasks: subDetail.tasks
+                      availableTasks: subDetail.tasks
                     });
                   }
                 }
