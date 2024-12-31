@@ -21,7 +21,7 @@ export function Cell({ text, className, onClick }: CellProps) {
   return (
     <div
       className={cn(
-        "group relative flex items-center justify-center h-[120px] p-3 text-center cursor-pointer",
+        "group relative flex items-center justify-center h-[120px] p-3 text-center cursor-pointer rounded-sm",
         className
       )}
       onClick={handleClick}
@@ -35,7 +35,7 @@ export function Cell({ text, className, onClick }: CellProps) {
         {text}
       </p>
       {isHovered && text.length > 0 && (
-        <div className="absolute z-10 bg-white border border-gray-200 shadow-lg rounded-md p-3 min-w-[200px] max-w-[300px] text-sm">
+        <div className="absolute z-10 bg-gray-800 border border-gray-600 shadow-xl rounded-md p-3 min-w-[200px] max-w-[300px] text-sm text-white">
           {text}
         </div>
       )}

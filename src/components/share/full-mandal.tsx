@@ -31,7 +31,15 @@ export function FullMandal({
   // 섹션 인덱스를 계산하는 함수
   const getSectionIndex = (row: number, col: number) => {
     if (row === 1 && col === 1) return -1; // 중앙 섹션
-    return row * 3 + col;
+
+    // 섹션 순서를 시계 방향으로 매핑
+    const sectionMapping = [
+      [0, 1, 2],    // 첫 번째 행
+      [3, -1, 5],   // 두 번째 행
+      [6, 7, 4]     // 세 번째 행
+    ];
+
+    return sectionMapping[row][col];
   };
 
   const renderSection = (sectionRow: number, sectionCol: number) => {
@@ -45,7 +53,12 @@ export function FullMandal({
     });
     
     return (
-      <div key={`section-${sectionRow}-${sectionCol}`} className="grid grid-cols-3 gap-0.5 bg-gray-700 p-0.5 rounded">
+      <div key={`section-${sectionRow}-${sectionCol}`} 
+        className={cn(
+          "grid grid-cols-3 gap-0.5 p-0.5 rounded",
+          isCenter ? "bg-gray-900" : "bg-gray-800"
+        )}
+      >
         {Array(9)
           .fill(null)
           .map((_, index) => {
@@ -109,15 +122,18 @@ export function FullMandal({
               }
             }
 
+            const isMainGoal = isCenter && row === 1 && col === 1;
+            const isSubGoal = !isCenter && row === 1 && col === 1;
+
             return (
               <Cell
                 key={`cell-${row}-${col}`}
                 text={text}
                 className={cn(
-                  "border border-gray-200 text-black",
-                  isCenter && row === 1 && col === 1 && "bg-amber-100 font-bold text-base",
-                  !isCenter && row === 1 && col === 1 && "bg-sky-100 font-semibold",
-                  "bg-white hover:bg-gray-100 transition-colors"
+                  "text-white transition-colors",
+                  isMainGoal && "bg-amber-700 font-bold text-base border-2 border-amber-500 shadow-lg",
+                  isSubGoal && "bg-sky-900 font-semibold border-2 border-sky-700",
+                  !isMainGoal && !isSubGoal && "bg-gray-700 hover:bg-gray-600"
                 )}
                 onClick={handleCellClick}
               />
@@ -128,7 +144,10 @@ export function FullMandal({
   };
 
   return (
-    <div className={cn("grid grid-cols-3 gap-1 bg-gray-800 p-1 rounded-lg w-full max-w-6xl mx-auto", className)}>
+    <div className={cn(
+      "grid grid-cols-3 gap-1 p-1 rounded-lg w-full max-w-6xl mx-auto bg-gray-950",
+      className
+    )}>
       {Array(9)
         .fill(null)
         .map((_, index) => {
