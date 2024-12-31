@@ -56,7 +56,38 @@ const addToRemoveQueue = (toastId: string) => {
   toastTimeouts.set(toastId, timeout)
 }
 
-let state: State = { toasts: [] }
+type Toast = Omit<ToasterToast, "id">
+
+function toast({ ...props }: Toast) {
+  const id = Math.random().toString()
+
+  const update = (props: ToasterToast) =>
+    dispatch({
+      type: "UPDATE_TOAST",
+      toast: { ...props, id },
+    })
+  const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
+
+  dispatch({
+    type: "ADD_TOAST",
+    toast: {
+      ...props,
+      id,
+      open: true,
+      onOpenChange: (open) => {
+        if (!open) dismiss()
+      },
+    },
+  })
+
+  return {
+    id: id,
+    dismiss,
+    update,
+  }
+}
+
+const initialState: State = { toasts: [] }
 
 const reducer = (state: State, action: ToastActionType): State => {
   switch (action.type) {
@@ -116,45 +147,15 @@ const reducer = (state: State, action: ToastActionType): State => {
 const listeners: Array<(state: State) => void> = []
 
 function dispatch(action: ToastActionType) {
-  state = reducer(state, action)
+  let state = reducer(initialState, action)
   listeners.forEach((listener) => {
     listener(state)
   })
-}
-
-type Toast = Omit<ToasterToast, "id">
-
-function toast({ ...props }: Toast) {
-  const id = Math.random().toString()
-
-  const update = (props: ToasterToast) =>
-    dispatch({
-      type: "UPDATE_TOAST",
-      toast: { ...props, id },
-    })
-  const dismiss = () => dispatch({ type: "DISMISS_TOAST", toastId: id })
-
-  dispatch({
-    type: "ADD_TOAST",
-    toast: {
-      ...props,
-      id,
-      open: true,
-      onOpenChange: (open) => {
-        if (!open) dismiss()
-      },
-    },
-  })
-
-  return {
-    id: id,
-    dismiss,
-    update,
-  }
+  return state
 }
 
 function useToast() {
-  const [state, setState] = React.useState<State>(state)
+  const [state, setState] = React.useState<State>(initialState)
 
   React.useEffect(() => {
     listeners.push(setState)

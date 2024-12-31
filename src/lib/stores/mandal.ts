@@ -38,7 +38,7 @@ export const useMandalStore = create<MandalState>((set) => ({
           { title: "서브 목표 8", tasks: ["상세 8-1", "상세 8-2", "상세 8-3", "상세 8-4", "상세 8-5", "상세 8-6", "상세 8-7", "상세 8-8"] },
           { title: "서브 목표 9", tasks: ["상세 9-1", "상세 9-2", "상세 9-3", "상세 9-4", "상세 9-5", "상세 9-6", "상세 9-7", "상세 9-8"] },
         ],
-        author: "작성자",
+        authorId: "작성자",
         createdAt: new Date(),
       };
       set({ mandal: mockMandal });

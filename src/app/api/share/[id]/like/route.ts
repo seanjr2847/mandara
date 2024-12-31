@@ -101,7 +101,11 @@ export async function POST(
                 id: mandalId,
               },
             },
-            userId,
+            user: {
+              connect: {
+                id: userId,
+              },
+            },
           },
         }),
         prisma.sharedMandal.update({

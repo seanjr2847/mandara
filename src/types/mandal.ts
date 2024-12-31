@@ -50,3 +50,15 @@ export function validateMandal(data: Partial<Mandal>): { isValid: boolean; error
 
   return { isValid: true };
 }
+
+export interface Theme {
+  label: string;
+  className: string;
+  centerClassName: string;
+  background: string;
+}
+
+export interface Font {
+  label: string;
+  className: string;
+}

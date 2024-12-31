@@ -5,19 +5,17 @@ import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { FullMandal } from "@/components/share/full-mandal";
 import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
 import { useMandalStore } from "@/store/mandal";
 
 function ResultContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [mandalId, setMandalId] = useState<string | undefined>(undefined);
   const { mainGoal, subGoals, subGoalDetails, reset: resetMandal } = useMandalStore();
 
   useEffect(() => {
     const id = searchParams.get("id");
     if (id) {
-      setMandalId(id);
+      // Removed the line that sets mandalId
     }
   }, [searchParams]);
 
@@ -93,6 +91,8 @@ function ResultContent() {
 }
 
 export default function ResultPage() {
+  const searchParams = useSearchParams();
+  const { mandal } = useMandal();
   return (
     <Suspense>
       <ResultContent />
