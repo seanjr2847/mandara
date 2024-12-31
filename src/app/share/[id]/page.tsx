@@ -39,8 +39,10 @@ export default function SharePage() {
         const data: SharedMandalData = await response.json();
         if (data.success && data.mandal) {
           setMainGoal(data.mandal.mainGoal);
-          setSubGoals(JSON.parse(data.mandal.subGoals));
-          setSubGoalDetails(JSON.parse(data.mandal.subGoalDetails));
+          const parsedSubGoals = JSON.parse(data.mandal.subGoals) as string[];
+          const parsedSubGoalDetails = JSON.parse(data.mandal.subGoalDetails) as { title: string; tasks: string[] }[];
+          setSubGoals(parsedSubGoals);
+          setSubGoalDetails(parsedSubGoalDetails);
         } else {
           throw new Error(data.error || "Failed to fetch mandal");
         }

@@ -14,12 +14,12 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import Image from "next/image";
 import { initializeKakao } from "@/lib/kakao";
-import { Theme, Font, themes, fonts } from "@/lib/share-customization";
+import { ThemeType, FontType, themes, fonts } from "@/lib/share-customization";
 
 interface ShareDialogProps {
   mandalId?: string;
-  theme: Theme;
-  font: Font;
+  theme: ThemeType;
+  font: FontType;
   showAuthor: boolean;
   showDate: boolean;
 }
