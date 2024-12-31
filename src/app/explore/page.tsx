@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
@@ -84,12 +83,12 @@ export default function ExplorePage() {
 
       {hasMore && (
         <div className="mt-8 text-center">
-          <Button
-            variant="outline"
+          <button
+            className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
             onClick={() => fetchMandals(cursor || undefined)}
           >
             더 보기
-          </Button>
+          </button>
         </div>
       )}
     </div>

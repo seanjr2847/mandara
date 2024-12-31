@@ -4,19 +4,15 @@ import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { FullMandal } from "@/components/share/full-mandal";
-import { ShareDialog } from "@/components/result/share-dialog";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useMandalStore } from "@/store/mandal";
-import { useToast } from "@/components/ui/use-toast";
 
 function ResultContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [mandalId, setMandalId] = useState<string | undefined>(undefined);
   const { mainGoal, subGoals, subGoalDetails, reset: resetMandal } = useMandalStore();
-  const { toast } = useToast();
-  const [isSharing, setIsSharing] = useState(false);
 
   useEffect(() => {
     const id = searchParams.get("id");
@@ -31,9 +27,6 @@ function ResultContent() {
   };
 
   const handleShare = async () => {
-    if (isSharing) return;
-    
-    setIsSharing(true);
     try {
       const response = await fetch("/api/share", {
         method: "POST",
@@ -49,24 +42,19 @@ function ResultContent() {
 
       const data = await response.json();
       if (data.success) {
-        toast({
-          title: "공유 링크가 생성되었습니다",
-          description: "클립보드에 복사되었습니다.",
-        });
+        // toast({
+        //   title: "공유 링크가 생성되었습니다",
+        //   description: "클립보드에 복사되었습니다.",
+        // });
         await navigator.clipboard.writeText(
           `${window.location.origin}/share/${data.id}`
         );
       } else {
         throw new Error("Failed to share");
       }
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "공유 실패",
-        description: "잠시 후 다시 시도해주세요.",
-      });
-    } finally {
-      setIsSharing(false);
+    } catch (err) {
+      console.error(err);
+      return null;
     }
   };
 
@@ -85,10 +73,9 @@ function ResultContent() {
             </Button>
             <Button
               onClick={handleShare}
-              disabled={isSharing}
               className="bg-slate-700 hover:bg-slate-600"
             >
-              {isSharing ? "공유 중..." : "공개하기"}
+              공개하기
             </Button>
           </div>
         </div>

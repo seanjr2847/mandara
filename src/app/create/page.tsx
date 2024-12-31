@@ -5,21 +5,16 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useMandalStore } from "@/store/mandal";
 import { useRouter } from "next/navigation";
-import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
 
 export default function CreatePage() {
   const router = useRouter();
   const { mainGoal, setMainGoal, setSubGoals, setSubGoalDetails } = useMandalStore();
-  const { toast } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
 
   const handleNext = () => {
     if (!mainGoal.trim()) {
-      toast({
-        variant: "destructive",
-        title: "메인 목표를 입력해주세요",
-      });
+      alert("메인 목표를 입력해주세요");
       return;
     }
     router.push("/create/sub-goals");
@@ -27,11 +22,7 @@ export default function CreatePage() {
 
   const generateFullMandal = async () => {
     if (!mainGoal.trim()) {
-      toast({
-        variant: "destructive",
-        title: "메인 목표를 입력해주세요",
-        description: "AI가 만다라트를 생성하기 위해서는 메인 목표가 필요합니다."
-      });
+      alert("메인 목표를 입력해주세요");
       return;
     }
 
@@ -77,18 +68,12 @@ export default function CreatePage() {
       setSubGoals(subGoals);
       setSubGoalDetails(subGoalDetails);
       
-      toast({
-        title: "만다라트가 생성되었습니다",
-        description: "AI가 생성한 내용을 검토해보세요."
-      });
+      alert("만다라트가 생성되었습니다");
       
       router.push("/result");
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "생성 실패",
-        description: "만다라트 생성 중 오류가 발생했습니다. 다시 시도해주세요."
-      });
+    } catch (err) {
+      console.error(err);
+      alert("생성 실패");
     } finally {
       setIsGenerating(false);
     }
