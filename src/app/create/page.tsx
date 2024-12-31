@@ -4,11 +4,12 @@ import { useRouter } from "next/navigation";
 import Button from "@/components/ui/button/client";
 import { useMandalStore } from "@/store/mandal";
 import { useState } from "react";
+import { CreateCoachMark } from "@/components/onboarding/create-coach-mark";
 
 export default function CreatePage() {
   const router = useRouter();
   const { mainGoal, setMainGoal, setSubGoals, setSubGoalDetails } = useMandalStore();
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleNext = () => {
     if (!mainGoal.trim()) {
@@ -24,7 +25,6 @@ export default function CreatePage() {
       return;
     }
 
-    setIsGenerating(true);
     try {
       const response = await fetch("/api/recommend", {
         method: "POST",
@@ -72,8 +72,6 @@ export default function CreatePage() {
     } catch (err) {
       console.error(err);
       alert("생성 실패");
-    } finally {
-      setIsGenerating(false);
     }
   };
 
@@ -92,30 +90,30 @@ export default function CreatePage() {
               placeholder="메인 목표를 입력하세요"
               value={mainGoal}
               onChange={(e) => setMainGoal(e.target.value)}
-              className="text-lg py-6 text-center"
+              className="main-goal-input w-full px-4 py-3 text-lg rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent"
             />
           </div>
 
-          <div className="flex justify-center gap-4">
+          <div className="flex justify-between space-x-4">
             <Button
-              size="lg"
-              className="bg-red-500 hover:bg-red-600 text-white px-8 py-6 rounded-full text-lg"
-              onClick={handleNext}
-            >
-              직접 작성하기
-            </Button>
-            <Button 
-              size="lg"
-              variant="secondary"
-              className="px-8 py-6 rounded-full text-lg"
+              variant="outline"
               onClick={generateFullMandal}
-              disabled={isGenerating}
+              className="ai-recommendation flex-1"
             >
-              {isGenerating ? "AI가 생성 중..." : "AI로 전체 생성하기"}
+              AI 추천받기
+            </Button>
+
+            <Button
+              onClick={handleNext}
+              className="next-button flex-1"
+              disabled={!mainGoal.trim()}
+            >
+              다음 단계
             </Button>
           </div>
         </div>
       </div>
+      <CreateCoachMark />
     </div>
   );
 }
