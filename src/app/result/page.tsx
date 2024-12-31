@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { FullMandal } from "@/components/share/full-mandal";
@@ -91,8 +91,6 @@ function ResultContent() {
 }
 
 export default function ResultPage() {
-  const searchParams = useSearchParams();
-  const { mandal } = useMandal();
   return (
     <Suspense>
       <ResultContent />

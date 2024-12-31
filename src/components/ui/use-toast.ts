@@ -147,7 +147,7 @@ const reducer = (state: State, action: ToastActionType): State => {
 const listeners: Array<(state: State) => void> = []
 
 function dispatch(action: ToastActionType) {
-  let state = reducer(initialState, action)
+  const state = reducer(initialState, action)
   listeners.forEach((listener) => {
     listener(state)
   })
