@@ -18,7 +18,7 @@ export async function POST(
 
     const comment = await prisma.comment.create({
       data: {
-        sharedMandalId: id,
+        mandalId: id,
         userId,
         content,
       },
@@ -43,7 +43,15 @@ export async function GET(
 
     const comments = await prisma.comment.findMany({
       where: {
-        sharedMandalId: id,
+        mandalId: id,
+      },
+      include: {
+        user: {
+          select: {
+            name: true,
+            image: true,
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",

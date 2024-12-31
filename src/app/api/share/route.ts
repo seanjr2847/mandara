@@ -17,10 +17,10 @@ export async function POST(req: NextRequest) {
 
     const mandal = await prisma.mandal.create({
       data: {
+        authorId: session.user.id,
         mainGoal,
         subGoals: JSON.stringify(subGoals),
         subGoalDetails: JSON.stringify(subGoalDetails),
-        author: session?.user?.name || "익명",
       },
     });
 

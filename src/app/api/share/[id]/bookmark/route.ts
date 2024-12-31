@@ -18,7 +18,7 @@ export async function POST(
 
     const existingBookmark = await prisma.bookmark.findFirst({
       where: {
-        sharedMandalId: id,
+        mandalId: id,
         userId,
       },
     });
@@ -34,7 +34,7 @@ export async function POST(
 
     await prisma.bookmark.create({
       data: {
-        sharedMandalId: id,
+        mandalId: id,
         userId,
       },
     });
