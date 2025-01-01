@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Cell } from "./cell";
@@ -10,7 +12,7 @@ interface FullMandalProps {
   font: any;
 }
 
-export default function FullMandal({ mainGoal, subGoals, subGoalDetails, theme, font }: FullMandalProps) {
+export function FullMandal({ mainGoal, subGoals, subGoalDetails, theme, font }: FullMandalProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalText, setModalText] = useState("");
 
